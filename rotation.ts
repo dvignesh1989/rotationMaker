@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as xlsx from 'xlsx';
-import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
 import * as path from 'path';
 
 // Shuffle array function
@@ -47,7 +46,7 @@ interface FactionAvailability {
 
 const blueFor = ["ADF", "BAF", "CAF", "USA", "USMC"];
 const independant = ["IMF", "INS", "MEA", "TLF"];
-const pac = ["PAC", "PLAAGF", "PLAAMC"];
+const pac = ["PLA", "PLAAGF", "PLANMC"];
 const redfor = ["RGF", "VDV"];
 
 async function generateRotationFile(gameTypeParam: string[], factionParam: string[], outputFile: string, maxLines?: number): Promise<void> {
@@ -104,10 +103,13 @@ async function generateRotationFile(gameTypeParam: string[], factionParam: strin
         const factionSheet = workbook.Sheets['Layer FactionUnit Availability'];
         const factionData: FactionAvailability[] = xlsx.utils.sheet_to_json(factionSheet, { header: 1 })
             .slice(4) // Exclude header row
-            .filter(row => row[2] !== '' && row[2] !== undefined)
+            .filter(row => row[2] !== '')
+            .filter(row => row[2] !== undefined)
             .map(row => {
                 if (row[0] !== undefined) {
                     tempLevel = row[0]; // Update tempLevelName if level field is defined
+                }
+                if(row[1] !== undefined) {
                     tempLayerName = row[1]; // Update tempLayerName if Layer field is defined
                 }
                 return {
@@ -149,19 +151,28 @@ async function generateRotationFile(gameTypeParam: string[], factionParam: strin
         const processedCombinations = new Set<string>();
 
         // Iterate through shuffled layers
-        shuffledLayers.forEach(layer => {
+        filteredLayers.forEach(layer => {
             // Iterate through available factions for this layer
-            shuffledFactions.forEach(faction1 => {
+            filteredFactions
+                .filter(each => each.layerName === layer.layerName)
+                .filter(each => each.usableTeams.includes("Team1"))
+                .forEach (faction1 => {
                 // Check if faction1 belongs to blueFor, redFor, pac, or independant
                 const faction1Group = determineGroup(faction1.faction);
 
                 // Iterate through available factions for this layer again
-                shuffledFactions.forEach(faction2 => {
+                filteredFactions
+                    .filter(each => each.layerName === layer.layerName)
+                    .filter(each => each.usableTeams.includes("Team2"))
+                    .forEach(faction2 => {
                     // Check if faction2 belongs to blueFor, redFor, pac, or independant
                     const faction2Group = determineGroup(faction2.faction);
 
+                    const isIndependantMatchupAllowed = (faction1Group === "independant" && faction2Group === "independant" &&  faction1.faction !== faction2.faction);
+                                       
                     // Ensure that teams from the same group do not fight against each other
-                    if (faction1Group !== faction2Group || (faction1Group === "independant" && faction1.faction !== faction2.faction)) {
+                    if (faction1Group !== faction2Group || isIndependantMatchupAllowed) {
+                        
                         // Sort the factions alphabetically
                         const sortedFactions = [faction1.faction, faction2.faction].sort();
 
@@ -182,7 +193,7 @@ async function generateRotationFile(gameTypeParam: string[], factionParam: strin
         });
 
         // Shuffle the rotation content array
-        rotationContent = shuffleArray(rotationContent);
+        //rotationContent = shuffleArray(rotationContent);
 
         // Limit the number of lines if maxLines is provided
         if (maxLines && maxLines < rotationContent.length) {
