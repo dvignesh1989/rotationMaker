@@ -151,9 +151,9 @@ async function generateRotationFile(gameTypeParam: string[], factionParam: strin
         const processedCombinations = new Set<string>();
 
         // Iterate through shuffled layers
-        filteredLayers.forEach(layer => {
+        shuffledLayers.forEach(layer => {
             // Iterate through available factions for this layer
-            filteredFactions
+            shuffledFactions
                 .filter(each => each.layerName === layer.layerName)
                 .filter(each => each.usableTeams.includes("Team1"))
                 .forEach (faction1 => {
@@ -161,7 +161,7 @@ async function generateRotationFile(gameTypeParam: string[], factionParam: strin
                 const faction1Group = determineGroup(faction1.faction);
 
                 // Iterate through available factions for this layer again
-                filteredFactions
+                shuffledFactions
                     .filter(each => each.layerName === layer.layerName)
                     .filter(each => each.usableTeams.includes("Team2"))
                     .forEach(faction2 => {
@@ -193,7 +193,7 @@ async function generateRotationFile(gameTypeParam: string[], factionParam: strin
         });
 
         // Shuffle the rotation content array
-        //rotationContent = shuffleArray(rotationContent);
+        rotationContent = shuffleArray(rotationContent);
 
         // Limit the number of lines if maxLines is provided
         if (maxLines && maxLines < rotationContent.length) {
