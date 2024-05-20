@@ -1,4 +1,4 @@
-# Layer Generator
+# Rotation Maker
 
 Generate Squad game playable layers by parsing OWI provided Googlesheets. 
 
