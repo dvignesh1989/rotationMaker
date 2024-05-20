@@ -80,7 +80,7 @@ var pac = ["PLA", "PLAAGF", "PLANMC"];
 var redfor = ["RGF", "VDV"];
 function generateRotationFile(gameTypeParam, factionParam, outputFile, maxLines) {
     return __awaiter(this, void 0, void 0, function () {
-        var startTime, resultFolder, workbook, layerSheet, tempLevel_1, layerData, filteredLayers, shuffledLayers, tempLayerName_1, factionSheet, factionData, filteredFactions_1, shuffledFactions, factionGroups_1, rotationContent_1, processedCombinations_1, rotationText, outputFilePath, endTime, elapsedTime;
+        var startTime, resultFolder, workbook, layerSheet, tempLevel_1, layerData, filteredLayers, shuffledLayers, tempLayerName_1, factionSheet, factionData, filteredFactions, shuffledFactions_1, factionGroups_1, rotationContent_1, processedCombinations_1, rotationText, outputFilePath, endTime, elapsedTime;
         return __generator(this, function (_a) {
             try {
                 startTime = Date.now();
@@ -135,18 +135,18 @@ function generateRotationFile(gameTypeParam, factionParam, outputFile, maxLines)
                         usableTeams: row[5],
                     };
                 });
-                filteredFactions_1 = factionData.filter(function (layer) {
+                filteredFactions = factionData.filter(function (layer) {
                     var selected = factionParam.some(function (type) { return layer.faction.toLowerCase() === type.toLowerCase(); });
                     return selected;
                 });
-                shuffledFactions = shuffleArray(filteredFactions_1);
+                shuffledFactions_1 = shuffleArray(filteredFactions);
                 factionGroups_1 = {
                     blueFor: [],
                     redFor: [],
                     pac: [],
                     independant: [],
                 };
-                filteredFactions_1.forEach(function (faction) {
+                filteredFactions.forEach(function (faction) {
                     var group = determineGroup(faction.faction);
                     if (group) { // Check if group is defined
                         factionGroups_1[group].push(faction);
@@ -155,16 +155,16 @@ function generateRotationFile(gameTypeParam, factionParam, outputFile, maxLines)
                 rotationContent_1 = [];
                 processedCombinations_1 = new Set();
                 // Iterate through shuffled layers
-                filteredLayers.forEach(function (layer) {
+                shuffledLayers.forEach(function (layer) {
                     // Iterate through available factions for this layer
-                    filteredFactions_1
+                    shuffledFactions_1
                         .filter(function (each) { return each.layerName === layer.layerName; })
                         .filter(function (each) { return each.usableTeams.includes("Team1"); })
                         .forEach(function (faction1) {
                         // Check if faction1 belongs to blueFor, redFor, pac, or independant
                         var faction1Group = determineGroup(faction1.faction);
                         // Iterate through available factions for this layer again
-                        filteredFactions_1
+                        shuffledFactions_1
                             .filter(function (each) { return each.layerName === layer.layerName; })
                             .filter(function (each) { return each.usableTeams.includes("Team2"); })
                             .forEach(function (faction2) {
@@ -189,7 +189,7 @@ function generateRotationFile(gameTypeParam, factionParam, outputFile, maxLines)
                     });
                 });
                 // Shuffle the rotation content array
-                //rotationContent = shuffleArray(rotationContent);
+                rotationContent_1 = shuffleArray(rotationContent_1);
                 // Limit the number of lines if maxLines is provided
                 if (maxLines && maxLines < rotationContent_1.length) {
                     rotationContent_1 = rotationContent_1.slice(0, maxLines);

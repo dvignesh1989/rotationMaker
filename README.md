@@ -22,18 +22,41 @@ This simple Javascript is set to run on a node environment taking in whitelist A
 
 * The program is executed inside of a terminal/console by navigating to the project folder and executing the following commands
 
-* Generate the js file from the ts file: 
+* Generate/Compile the js file from the ts file: 
 ```
 tsc .\rotation.ts
 ```
 
 * Execute the generated js file with two whitelist commands
     * Gamemodes whitelisting (All possible gamemodes: AAS, RAAS, Invasion, Seed, Skirmish, Insurgency, TerritoryControl, Destruction)
+    * Factions whitelist 
+        * Bluefor       : ADF, BAF, CAF, USA, USMC
+        * Independant   : IMF, INS, MEA, TLF
+        * PAC           : PLA, PLAAGF, PLANMC
+        * Redfor        : RGF, VDV
+    * Filename (File gets generated into result folder)
+    * LimitBy (Optional: Limits total output by the number specified. or else outputs all) 
 ```
-node .\rotation.ts [gamemodes] [factions] fileName.cfg
+node .\rotation.ts [gamemodes] [factions] fileName.cfg [Optional: Limit]
 ```
 
-Once the commandline call completes, it will generate the file directly under the 
+* Once the commandline call completes, it will generate the file directly under the result folder. Example call for would look like 
+
+```
+node .\rotation.js "AAS, RAAS, Invasion" "USA,ADF,USMC,BAF,CAF,INS,IMF,MEA,TLF,RGF,VDV,PLA,PLANMC,PLAAGF" all.cfg 10
+```
+
+* An Independant only example would look like
+
+```
+node .\rotation.js "AAS,RAAS,Invasion" "INS,IMF,TLF,MEA" independant.cfg 25
+```
+
+* Blue vs Red
+
+```
+node .\rotation.js "AAS, RAAS, Invasion" "USA,ADF,USMC,BAF,CAF,RGF,VDV" redblue.cfg 12
+```
 
 ## Help
 
